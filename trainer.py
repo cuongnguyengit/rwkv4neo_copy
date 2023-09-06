@@ -109,6 +109,15 @@ class train_callback(pl.Callback):
                         to_save_dict,
                         f"{args.proj_dir}/rwkv-final.pth",
                     )
+            if int(real_step + 1) % 100000 == 0:
+                to_save_dict = pl_module.state_dict()
+                try:
+                    my_save(
+                        to_save_dict,
+                        f"{args.proj_dir}/rwkv-{real_step}-{args.epoch_begin + trainer.current_epoch}.pth",
+                    )
+                except Exception as e:
+                    print('Error\n\n', e, '\n\n')
                 
 
     def on_train_epoch_start(self, trainer, pl_module):
