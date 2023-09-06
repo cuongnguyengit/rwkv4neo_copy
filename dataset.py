@@ -50,7 +50,7 @@ class MyDataset(Dataset):
             raw_datasets = load_dataset(
                 "text",
                 data_files=args.data_file,
-                cache_dir="./cache/",
+                cache_dir="/content/drive/MyDrive/llm/cache/",
             )
 
             # txt = open(args.data_file, "r", encoding=args.data_type).read()
