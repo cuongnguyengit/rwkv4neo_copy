@@ -59,7 +59,7 @@ class MyDataset(Dataset):
             # tknz = PhobertTokenizerFast("./data/vocab.txt", "./data/bpe.codes", "./data/tokenizer.json")
             # self.vocab_size = 64256  # 251 * 256
             from transformers import AutoTokenizer
-            tknz = AutoTokenizer.from_pretrained("/content/drive/MyDrive/llm/checkpoint/gptneo_vietai/")
+            tknz = AutoTokenizer.from_pretrained("/content/drive/MyDrive/llm/checkpoint/gpt2/")
 
             def tokenize_function(examples):
                 output = tknz(examples['text'])
