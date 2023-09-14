@@ -39,8 +39,9 @@
 # cd data; wget https://huggingface.co/vinai/phobert-base/raw/main/vocab.txt; cd ..
 # cd data; wget https://huggingface.co/vinai/phobert-base/raw/main/tokenizer.json; cd ..
 # cd data; wget https://huggingface.co/vinai/phobert-base/raw/main/bpe.codes; cd ..
- python3 train.py --load_model "./out/rwkv-45.pth" --wandb "gptneo" --proj_dir "out" \
- --data_file "/workspace/data/train.txt" --data_type "utf-8" \
+ python3 train.py --load_model "" --wandb "rwkv4c" --proj_dir "out" \
+ --data_file "/workspace/data/" --data_type "utf-8" \
+ --cache_dir "./cache/" --tokenizer_path "../checkpoint/rwkv4c/" \
  --ctx_len 1024 --epoch_steps 2000 --epoch_count 20 --epoch_begin 0 --epoch_save 5 \
  --micro_bsz 4 --n_layer 6 --n_embd 512 --pre_ffn 0 --head_qk 0 \
  --lr_init 8e-4 --lr_final 1e-5 --warmup_steps 0 --beta1 0.9 --beta2 0.99 --adam_eps 1e-8 \

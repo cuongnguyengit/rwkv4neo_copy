@@ -9,25 +9,13 @@ from torch.utils.data import Dataset
 from pytorch_lightning.utilities import rank_zero_info
 from datasets import load_dataset
 from itertools import chain
+import os
 
 class MyDataset(Dataset):
     def __init__(self, args):
         self.args = args
 
-        if args.data_type == "symato":
-            import sys;
-            sys.path.append('../')
-            from symato_2944 import Symato
-            symato = Symato()
-            self.data = symato.tokenize(args.data_file, rev=(args.data_order == "reversed"))
-            sample = symato.tids_to_utf8(self.data[-800:])
-            print("\n\n- - - [ TRAIN DATA SAMPLE ] - - -\n", sample, "\n\n")
-            self.vocab_size = symato.vocab_size()
-            self.data_size = len(self.data)
-            rank_zero_info(f"Current vocab size = {self.vocab_size} (make sure it's correct)")
-            rank_zero_info(f"Data has {self.data_size} samples.")
-
-        elif args.data_type == "chars":
+        if args.data_type == "chars":
             self.data = open(args.data_file, "r", encoding="utf-8").read()
             rank_zero_info("Building token list...")
             unique = sorted(list(set(self.data)))
@@ -47,11 +35,24 @@ class MyDataset(Dataset):
         else:  # unicode
             rank_zero_info("load data...")
 
-            raw_datasets = load_dataset(
-                "text",
-                data_files=args.data_file,
-                cache_dir="/content/drive/MyDrive/llm/cache/",
-            )
+            if os.path.isdir(args.data_file):
+                raw_datasets = load_dataset(
+                    "text",
+                    data_files=[os.path.join(args.data_file, i) for i in os.listdir(args.data_file) if str(i).endswith(".txt")],
+                    # cache_dir="/content/drive/MyDrive/llm/cache/",
+                    # cache_dir="./cache/",
+                    cache_dir=args.cache_dir,
+                )
+            elif os.path.isfile(args.data_file):
+                raw_datasets = load_dataset(
+                    "text",
+                    data_files=args.data_file,
+                    # cache_dir="/content/drive/MyDrive/llm/cache/",
+                    # cache_dir="./cache/",
+                    cache_dir=args.cache_dir,
+                )
+            else:
+                raise "File error " + args.data_file
 
             # txt = open(args.data_file, "r", encoding=args.data_type).read()
             # from tokenization_phobert_fast import PhobertTokenizerFast
@@ -59,7 +60,9 @@ class MyDataset(Dataset):
             # tknz = PhobertTokenizerFast("./data/vocab.txt", "./data/bpe.codes", "./data/tokenizer.json")
             # self.vocab_size = 64256  # 251 * 256
             from transformers import AutoTokenizer
-            tknz = AutoTokenizer.from_pretrained("/content/drive/MyDrive/llm/checkpoint/gpt2/")
+            # tknz = AutoTokenizer.from_pretrained("/content/drive/MyDrive/llm/checkpoint/rwkv4c/")
+            # tknz = AutoTokenizer.from_pretrained("../checkpoint/rwkv4c/")
+            tknz = AutoTokenizer.from_pretrained(args.tokenizer_path)
 
             def tokenize_function(examples):
                 output = tknz(examples['text'])

@@ -103,39 +103,11 @@ def parse_web(url="https://www.geeksforgeeks.org/"):
 
 
 list_links = [
-    # "https://vnexpress.net/",
-    "https://viettel.vn/",
-    "https://viettel4glte.com/",
-    "https://viettelkm.vn/",
-    "https://viettel.dangkymang.vn/",
-    "https://dangkyviettel.com.vn/",
-    "https://4g5gviettel.net/",
-    "https://didongviettel.vn/",
-    "https://www.vietteldata.vn/",
-    "https://3g4gviettel.online/",
-    "https://vietteltelecom.vn/",
-    "https://viettelstore.vn/",
-    "https://vinaphone.com.vn/",
-    "https://vnpt.com.vn/",
-    "https://vinaphoneplus.com.vn/",
-    "https://tongdaivinaphone.vn/",
-    "https://www.mobifone.vn/",
-    "https://www.mobifone.pro.vn/",
-    "https://mobifone.net.vn/",
-    "https://shop.mobifone8.com.vn/",
-    "https://viettelmoney.vn/",
-    "https://vnptpay.vn/web/",
-    "https://mobifonemoney.vn/",
-    "http://data3g4gmobi.asia/",
-    "http://cacgoicuocvinaphone.asia/",
-    "http://viettelsieukm.shop/",
-    "https://3gviettel.vn/",
-    "https://mobifone3g.info/",
-    "https://vinaphone4g5g.vn/",
-    "https://vnmobifone.vn/",
-    "https://4gmobifone.net/",
-    "https://3gmobifone.vn/",
-    "https://vinaphone3g.com.vn/",
+    "https://vjst.vn/",
+    "https://www.vista.gov.vn/",
+    "https://khoahocphattrien.vn/",
+    "http://truyenthongkhoahoc.vn/",
+    "https://www.ipvietnam.gov.vn/"
 ]
 
 started_link = list_links.copy()
@@ -143,7 +115,7 @@ started_link = list_links.copy()
 check_head = lambda x: any(str(x).startswith(i) for i in started_link)
 
 # txt = open("G:\Project\Develop\DATA\TEXT/telecom_web/telecom_website.txt", 'w', encoding='utf-8')
-txt = open("../data/telecom.txt", 'a', encoding='utf-8')
+txt = open("../data/khcn.txt", 'a', encoding='utf-8')
 # wtxt = open("vnexpress.txt", 'a', encoding='utf-8')
 
 while len(list_links) > 0:
@@ -161,7 +133,7 @@ while len(list_links) > 0:
     # for link in list_links[:5]:
     #     print(f"\t\t{link}")
     print("================================ ================================== ============================")
-    if check_head(url):
+    if check_head(url) and len(out) > 400:
         try:
             txt.write(out.strip() + "\n\n\n\n")
         except:

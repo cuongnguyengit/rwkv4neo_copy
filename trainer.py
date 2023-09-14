@@ -4,13 +4,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.utilities import rank_zero_only
 
 def my_save(dd, ff):
-    if '14b-run1' not in ff:
-        torch.save(dd, ff)
-    else:
-        fn = ff.split('/')[-1]
-        fff = '/dev/shm/' + fn
-        torch.save(dd, fff)
-        subprocess.Popen(f" aws s3 mv {fff} s3://rwkv-14b/{fn} --quiet", shell=True)
+    torch.save(dd, ff)
 
 class train_callback(pl.Callback):
     def __init__(self, args):
@@ -114,8 +108,12 @@ class train_callback(pl.Callback):
                 try:
                     my_save(
                         to_save_dict,
-                        f"{args.proj_dir}/rwkv-{real_step}-{args.epoch_begin + trainer.current_epoch}.pth",
+                        f"{args.proj_dir}/rwkv-step_{real_step}-epoch_{args.epoch_begin + trainer.current_epoch}-loss_{trainer.my_epoch_loss}.pth",
                     )
+                    # my_save(
+                    #     to_save_dict,
+                    #     f"{args.proj_dir}/rwkv-{trainer.my_epoch_loss}-{args.epoch_begin + trainer.current_epoch}.pth",
+                    # )
                 except Exception as e:
                     print('Error\n\n', e, '\n\n')
                 

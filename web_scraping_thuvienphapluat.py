@@ -62,10 +62,7 @@ def getdata(url, retry=3):
     }
     for i in range(retry):
         try:
-            r = requests.get(url, headers=headers, timeout=(5, 10), proxies={
-                'https': '10.207.156.52:3128',
-                'http': '10.207.156.52:3128',
-            })
+            r = requests.get(url, headers=headers, timeout=(50, 60))
             rec = r.encoding
             return bytes(r.text, rec).decode('utf-8')
             # return r.text
@@ -78,14 +75,16 @@ def parse_web(url="https://www.geeksforgeeks.org/"):
     htmldata = getdata(url)
     soup = BeautifulSoup(htmldata, 'html.parser')
     out = ''
+    last = ''
     for data in soup.find_all("p"):
-        tmp = data.get_text().lower().strip()
-        if len(tmp) < 10:
+        try:
+            tmp = re.sub(r'\s+', data.get_text(), ' ').strip()
+            if len(tmp) < 10 or (last and last == tmp):
+                continue
+        except:
             continue
-        if tmp.endswith(".") and tmp.endswith(";") and tmp.endswith("?") and tmp.endswith("!"):
-            out += tmp + "\n"
-        else:
-            out += tmp + ".\n"
+        out += tmp + "\n"
+        last = tmp
     links = []
     rurl = parse_main_url(url)
     for link in soup.findAll('a'):
@@ -104,31 +103,38 @@ def parse_web(url="https://www.geeksforgeeks.org/"):
     return out, links
 
 
+web = "https://www.thuvienphapluat.vn/"
+
 list_links = [
-    "https://toplist.vn/",
+    web
 ]
 
 # txt = open("G:\Project\Develop\DATA\TEXT/telecom_web/telecom_website.txt", 'w', encoding='utf-8')
-wtxt = open("toplist.txt", 'a', encoding='utf-8')
+txt = open("../data/thuvienphapluat.txt", 'a', encoding='utf-8')
 
 while len(list_links) > 0:
     url = list_links.pop(0)
     if url in dict_links:
         print(f"Url={url} was scraped")
         continue
-    if str(url).startswith("https://toplist.vn/"):
-        wtxt.write(f"{url}\n")
+    if not str(url).startswith(web):
+        # wtxt.write(f"{url}\n")
+        continue
     print(f"Parse url={url}")
     out, links = parse_web(url)
-    print(out)
+    # print(out)
     dict_links[url] = 1
     print(f"\tText Size: {len(out)}, links len: {len(links)}, all links len: {len(list_links)}, all scraped links: {len(dict_links)}")
     # print(f'\tNext 5 link:')
     # for link in list_links[:5]:
     #     print(f"\t\t{link}")
     print("================================ ================================== ============================")
-    # txt.write(out)
+    if len(out) > 500 or (str(url).endswith(".html") or str(url).endswith(".htm")):
+        try:
+            txt.write(out.strip() + "\n\n\n\n")
+        except:
+            pass
 
     for link in links:
-        if link not in list_links and link not in dict_links and str(link).startswith("https://toplist.vn/"):
+        if link not in list_links and link not in dict_links and str(link).startswith(web):
             list_links.append(link)
